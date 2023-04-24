@@ -14,17 +14,10 @@ using System.Net;
 
 namespace PersonalAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/")]
     [ApiController]
     public class GoogleEventController : ControllerBase
     {
-
-        // GET: api/<GoogleEventController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
 
         // GET api/<GoogleEventController>/5
         [HttpGet("available-hour-blocks")]
@@ -48,7 +41,7 @@ namespace PersonalAPI.Controllers
                 ApplicationName = "Google Calendar API Sample",
             });
 
-            DateTime start = WholeHourClass.RoundUpToNextWholeHour(DateTime.Now);
+            DateTime start = WholeHourModel.RoundUpToNextWholeHour(DateTime.Now);
             DateTime end = start.AddDays(3); // Adjust as needed for the range you want to check
             int blockSizeInMinutes = 60;
 
@@ -107,7 +100,7 @@ namespace PersonalAPI.Controllers
         // POST api/<GoogleEventController>
 
         [HttpPost("schedule")]
-        public async Task<IActionResult> Scheduler([FromBody] EventRequestClass eventRequest )
+        public async Task<IActionResult> Scheduler([FromBody] EventRequestModel eventRequest )
         {
             // Initialize the Google Calendar API client library
             string credPath = ".\\credentials.json"; // path to your JSON file containing API credentials
@@ -160,16 +153,7 @@ namespace PersonalAPI.Controllers
             request.SingleEvents = true;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
-            //Events events = request.Execute();
-            //if (events.Items.Count > 0)
-            //{
-            //    Console.WriteLine("Time conflict detected with the following events:");
-            //    foreach (var eventItem in events.Items)
-            //    {
-            //        Console.WriteLine($"- {eventItem.Summary} (starts at {eventItem.Start.DateTime})");
-
-            //    }
-            //}
+            
 
             // Insert the new event
             EventsResource.InsertRequest insertRequest = service.Events.Insert(newEvent, "primary");
@@ -184,10 +168,6 @@ namespace PersonalAPI.Controllers
                 return BadRequest("Error creating event.");
             }
 
-        }       
-
-        
-    }
-
-    
+        }        
+    }    
 }

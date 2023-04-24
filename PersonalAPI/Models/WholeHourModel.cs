@@ -1,6 +1,6 @@
 ﻿namespace PersonalAPI.Models
 {
-    public class WholeHourClass
+    public class WholeHourModel
     {
         public static DateTime RoundUpToNextWholeHour(DateTime dateTime)
         {
