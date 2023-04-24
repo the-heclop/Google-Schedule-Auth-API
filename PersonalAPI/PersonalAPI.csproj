@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="token.json\**" />
-    <Content Remove="token.json\**" />
-    <EmbeddedResource Remove="token.json\**" />
-    <None Remove="token.json\**" />
+    <Compile Remove="token.json - Copy\**" />
+    <Content Remove="token.json - Copy\**" />
+    <EmbeddedResource Remove="token.json - Copy\**" />
+    <None Remove="token.json - Copy\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Google.Apis.Auth.OAuth2.Responses.TokenResponse-user" />
   </ItemGroup>
 
   <ItemGroup>
