@@ -1,4 +1,4 @@
-# PersonalAPIApp
+# Schedule App API
 
 Google API to list available time blocks from Google Calendar API and API to schedule a 1 hour time block on the calendar.
 
