@@ -6,15 +6,23 @@ using Microsoft.EntityFrameworkCore;
 using PersonalAPI.Models;
 using Microsoft.Extensions.Configuration;
 using System;
-
+using PersonalAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddDbContext<UserContext>(options =>
+builder.Services.AddCors(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins("http://localhost:4200");
+    });
+});
+
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 builder.Services.AddAuthentication(options =>
@@ -45,6 +53,8 @@ builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -52,10 +62,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
 
-app.UseAuthorization();
+
+app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

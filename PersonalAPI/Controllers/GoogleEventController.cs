@@ -9,6 +9,7 @@ using PersonalAPI.Models;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +21,7 @@ namespace PersonalAPI.Controllers
     {
 
         // GET api/<GoogleEventController>/5
+        [Authorize]
         [HttpGet("available-hour-blocks")]
         public async Task<IActionResult> GetAvailableHourBlocks()
         {
@@ -42,7 +44,7 @@ namespace PersonalAPI.Controllers
             });
 
             DateTime start = WholeHourModel.RoundUpToNextWholeHour(DateTime.Now);
-            DateTime end = start.AddDays(3); // Adjust as needed for the range you want to check
+            DateTime end = start.AddDays(7); // Adjust as needed for the range you want to check
             int blockSizeInMinutes = 60;
 
             var freeBusyRequest = new FreeBusyRequest
@@ -83,17 +85,19 @@ namespace PersonalAPI.Controllers
 
                     if (conflict == null)
                     {
-                        availableBlocks.Add(new { Start = current, End = next });
+                        availableBlocks.Add(new { Start = current });
                         current = next;
                     }
                     else
                     {
                         current = Convert.ToDateTime(conflict.End);
+
                     }
 
 
                 }
             }
+
             return Ok(availableBlocks);
         }
 
@@ -138,7 +142,7 @@ namespace PersonalAPI.Controllers
                 },
                 End = new EventDateTime()
                 {
-                    DateTime = eventRequest.End,
+                    DateTime = eventRequest.Start.AddMinutes(60),
                 },
                 Description = eventRequest.Description,
             };
