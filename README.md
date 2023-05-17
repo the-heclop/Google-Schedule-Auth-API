@@ -16,13 +16,13 @@ http://heclop.net/
 
 2. Account Controller
 
-  [x] Create JWT token on account registration
+  *[x] Create JWT token on account registration
 
   [x] Create JWT when user logs in
 
   [x] Store JWT in local storage for later use in decorated endpoints
 
-  [X] Bcrypt passwords and verify hashed passwords
+  [x] Bcrypt passwords and verify hashed passwords
 
 3. Query Controller
 
