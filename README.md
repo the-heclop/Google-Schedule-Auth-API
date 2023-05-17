@@ -26,4 +26,5 @@ http://heclop.net/
 • Auth Controller demonstrates to generate a JWT if the user exists within a sql server database and verify the BCrypt hashed password to generate token.
 
 
+
   
