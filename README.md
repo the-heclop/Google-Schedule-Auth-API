@@ -16,7 +16,7 @@ http://heclop.net/
 
 2. Account Controller
 
-  *[x] Create JWT token on account registration*
+  * [x] Create JWT token on account registration
 
   [x] Create JWT when user logs in
 
