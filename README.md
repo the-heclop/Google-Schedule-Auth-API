@@ -5,28 +5,30 @@ http://heclop.net/
 # Requirements:
 
 1. Google Controller
-2. 
-[x] The Google event should be able to send user inputs into requested event
 
-[] Implement Authorize decorator for available times for JWT token
+  [x] The Google event should be able to send user inputs into requested event
 
-[x] List available time blocks based on free time from Google calendar
+  [] Implement Authorize decorator for available times for JWT token
 
-[x] Client can ony schedule 1 event at a time
+  [x] List available time blocks based on free time from Google calendar
+
+  [x] Client can ony schedule 1 event at a time
 
 2. Account Controller
-[x] Create JWT token on account registration
 
-[x] Create JWT when user logs in
+  [x] Create JWT token on account registration
 
-[x] Store JWT in local storage for later use in decorated endpoints
+  [x] Create JWT when user logs in
 
-[X] Bcrypt passwords and verify hashed passwords
+  [x] Store JWT in local storage for later use in decorated endpoints
+
+  [X] Bcrypt passwords and verify hashed passwords
 
 3. Query Controller
-[X] CRUD commands to look up data by user input
 
-[x] Allow multiple entries
+  [X] CRUD commands to look up data by user input
+
+  [x] Allow multiple entries
 
 # Features
 • MySQL database connection to store and read information.
