@@ -8,7 +8,7 @@ http://heclop.net/
 
   * [x] The Google event should be able to send user inputs into requested event
 
-  * [] Implement Authorize decorator for available times for JWT token
+  * [ ] Implement Authorize decorator for available times for JWT token
 
   * [x] List available time blocks based on free time from Google calendar
 
