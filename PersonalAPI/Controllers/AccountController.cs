@@ -49,6 +49,13 @@ namespace PersonalAPI.Controllers
         [HttpPost]
         public async Task <ActionResult<UserDTO>> Login(LoginDto loginRequest)
         {
+            string json = System.IO.File.ReadAllText("appsettings.json");
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            string jwtIssuer = jsonObj.Issuer;
+            string jwtAudience = jsonObj.Audience;
+            string jwtKey = jsonObj.Key;
+
             var user = await _context.TokenUsers.SingleOrDefaultAsync(u => u.username == loginRequest.Username);
 
             if (user == null) return BadRequest("Incorrect login");
@@ -59,12 +66,12 @@ namespace PersonalAPI.Controllers
             if (loginRequest.Username == user.username && hash)
             {
 
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeyForSignInSecret@1234"));
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-key"));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: "https://localhost:7226",
-                    audience: "https://localhost:7226",
+                    issuer: "example.com",
+                    audience: "example.com",
                     claims: new List<Claim>(),
                     expires: DateTime.Now.AddHours(24),
                     signingCredentials: signinCredentials                    
@@ -82,14 +89,20 @@ namespace PersonalAPI.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(LoginModel newUser)
         {
+            string json = System.IO.File.ReadAllText("appsettings.json");
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            string jwtIssuer = jsonObj.Issuer;
+            string jwtAudience = jsonObj.Audience;
+
             if (await UserExist(newUser.username)) return BadRequest("Username already exists");
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeyForSignInSecret@1234"));
-            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-key"));
+            var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);               
 
             var tokeOptions = new JwtSecurityToken(
-                issuer: "https://localhost:7226",
-                audience: "https://localhost:7226",
+                issuer: "example.com",
+                audience: "example.com",
                 claims: new List<Claim>(),
                 expires: DateTime.Now.AddHours(24),
                 signingCredentials: signinCredentials

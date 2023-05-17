@@ -1,12 +1,13 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
-using Google;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.EntityFrameworkCore;
 using PersonalAPI.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using PersonalAPI.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins("http://localhost:4200");
+        policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins("your-origins, cloud proiver will override these");
     });
 });
 
@@ -25,6 +26,7 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseMySQL(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Using JWT for authentication and authorization decorator in controllers
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -45,11 +47,13 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
+
 
 var app = builder.Build();
 

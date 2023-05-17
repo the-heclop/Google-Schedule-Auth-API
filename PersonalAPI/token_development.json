@@ -1,0 +1,11 @@
+{
+  // This will be created by the Google API if it does not exist this is only needed if you use [Authorize] attribute with google
+  "access_token": "google-token",
+  "token_type": "Bearer",
+  "expires_in": 99999, //Whenever you want
+  "refresh_token": "example-refresh",
+  "scope": "google-url",
+  "Issued": "time",
+  "IssuedUtc": "time"
+
+}

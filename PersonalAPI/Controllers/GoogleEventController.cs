@@ -10,6 +10,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Responses;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,27 +21,40 @@ namespace PersonalAPI.Controllers
     [ApiController]
     public class GoogleEventController : ControllerBase
     {
-
-        // GET api/<GoogleEventController>/5
-        [Authorize]
+                
         [HttpGet("available-hour-blocks")]
+        [Authorize]
         public async Task<IActionResult> GetAvailableHourBlocks()
         {
-            UserCredential credential;
-            using (var stream = new FileStream(".\\credentials.json", FileMode.Open, FileAccess.Read))
+            string json = System.IO.File.ReadAllText("credentials.json");
+            string tokens = System.IO.File.ReadAllText("tokens.json");
+
+            dynamic tokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject(tokens);
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            string clientId = jsonObj.client_id;
+            string clientSecret = jsonObj.client_secret;
+            string accessToken = tokenObj.access_token;
+            string refreshToken = tokenObj.refresh_token;
+
+            var clientSecrets = new ClientSecrets
             {
-                string credPath = "token.json";
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.FromStream(stream).Secrets,
-                    new[] { CalendarService.Scope.Calendar },
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-            }
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            };
+
+            var token = new TokenResponse { AccessToken = accessToken, RefreshToken = refreshToken };
+            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
+                new GoogleAuthorizationCodeFlow.Initializer
+                {
+                    ClientSecrets = clientSecrets
+                }),
+                "user",
+                token);
 
             var calendarService = new CalendarService(new BaseClientService.Initializer
             {
-                HttpClientInitializer = credential,
+                HttpClientInitializer = credentials,
                 ApplicationName = "Google Calendar API Sample",
             });
 
@@ -51,7 +66,7 @@ namespace PersonalAPI.Controllers
             {
                 TimeMin = start,
                 TimeMax = end,
-                TimeZone = "UTC", // Set the time zone as needed
+                TimeZone = "EST", // Set the time zone as needed
                 Items = new List<FreeBusyRequestItem> { new FreeBusyRequestItem { Id = "primary" } },
             };
 
@@ -93,8 +108,6 @@ namespace PersonalAPI.Controllers
                         current = Convert.ToDateTime(conflict.End);
 
                     }
-
-
                 }
             }
 
@@ -106,27 +119,37 @@ namespace PersonalAPI.Controllers
         [HttpPost("schedule")]
         public async Task<IActionResult> Scheduler([FromBody] EventRequestModel eventRequest )
         {
-            // Initialize the Google Calendar API client library
-            string credPath = ".\\credentials.json"; // path to your JSON file containing API credentials
-            UserCredential credential;
-            using (var stream = new FileStream(credPath, FileMode.Open, FileAccess.Read))
-            {
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.FromStream(stream).Secrets,
-                    new[] { CalendarService.Scope.Calendar },
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore("Calendar.Auth.Store")).Result;
-            }
-            // The above code uses the GoogleWebAuthorizationBroker to authenticate the user with the Calendar API using the credentials specified in the JSON file.
-            // The credentials are loaded from the JSON file using GoogleClientSecrets.Load().
-            // The user is authorized to access the Calendar API by requesting the Calendar scope.
-            // The authorization result is stored in a FileDataStore so that the user does not have to be re-authenticated on subsequent requests.
+            string json = System.IO.File.ReadAllText("credentials.json");
+            string tokens = System.IO.File.ReadAllText("tokens.json");
 
-            // Create a new CalendarService instance using the authorized credentials
+            dynamic tokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject(tokens);
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            string clientId = jsonObj.client_id;
+            string clientSecret = jsonObj.client_secret;
+            string accessToken = tokenObj.access_token;
+            string refreshToken = tokenObj.refresh_token;
+
+            var clientSecrets = new ClientSecrets
+            {
+                ClientId = clientId,
+                ClientSecret = clientSecret
+            };
+
+            var token = new TokenResponse { AccessToken = accessToken, RefreshToken = refreshToken };
+            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
+                new GoogleAuthorizationCodeFlow.Initializer
+                {
+                    ClientSecrets = clientSecrets
+                }),
+                "user",
+                token);
+
+
+
             var service = new CalendarService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = credential,
+                HttpClientInitializer = credentials,
                 ApplicationName = "Consult Software Guy"
             });
             // The above code creates a new CalendarService instance using the authorized credentials.
@@ -146,8 +169,6 @@ namespace PersonalAPI.Controllers
                 },
                 Description = eventRequest.Description,
             };
-
-
 
             // Check for time conflicts
             EventsResource.ListRequest request = service.Events.List("primary");
