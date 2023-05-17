@@ -26,5 +26,8 @@ To implement the AuthController, BCrypt hash will be needed for stored passwords
 [x] Allow multiple entries
 
 # Features
-• MySQL database connection
-  *
+• MySQL database connection to store and read information
+
+
+![Image]("C:\Users\bich\OneDrive\Pictures\landing.png")
+  
