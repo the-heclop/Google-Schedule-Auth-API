@@ -3,17 +3,8 @@ using Google.Apis.Calendar.v3;
 using Microsoft.AspNetCore.Mvc;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using System.Runtime.CompilerServices;
 using PersonalAPI.Models;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http.Json;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
-using Google.Apis.Auth.OAuth2.Flows;
-using Google.Apis.Auth.OAuth2.Responses;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace PersonalAPI.Controllers
 {
@@ -26,31 +17,17 @@ namespace PersonalAPI.Controllers
         [Authorize]
         public async Task<IActionResult> GetAvailableHourBlocks()
         {
-            string json = System.IO.File.ReadAllText("credentials.json");
-            string tokens = System.IO.File.ReadAllText("tokens.json");
+            
+            string calendarID = "your-id";
 
-            dynamic tokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject(tokens);
-            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-
-            string clientId = jsonObj.client_id;
-            string clientSecret = jsonObj.client_secret;
-            string accessToken = tokenObj.access_token;
-            string refreshToken = tokenObj.refresh_token;
-
-            var clientSecrets = new ClientSecrets
+            string[] Scopes = { CalendarService.Scope.Calendar };
+            GoogleCredential credentials;
+            using (var stream = new FileStream("service_key.json", FileMode.Open, FileAccess.Read))
             {
-                ClientId = clientId,
-                ClientSecret = clientSecret
-            };
 
-            var token = new TokenResponse { AccessToken = accessToken, RefreshToken = refreshToken };
-            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
-                new GoogleAuthorizationCodeFlow.Initializer
-                {
-                    ClientSecrets = clientSecrets
-                }),
-                "user",
-                token);
+                credentials = GoogleCredential.FromStream(stream)
+                                     .CreateScoped(Scopes);
+            }
 
             var calendarService = new CalendarService(new BaseClientService.Initializer
             {
@@ -67,7 +44,7 @@ namespace PersonalAPI.Controllers
                 TimeMin = start,
                 TimeMax = end,
                 TimeZone = "EST", // Set the time zone as needed
-                Items = new List<FreeBusyRequestItem> { new FreeBusyRequestItem { Id = "primary" } },
+                Items = new List<FreeBusyRequestItem> { new FreeBusyRequestItem { Id = calendarID } },
             };
 
             FreebusyResource.QueryRequest query = calendarService.Freebusy.Query(freeBusyRequest);
@@ -119,33 +96,17 @@ namespace PersonalAPI.Controllers
         [HttpPost("schedule")]
         public async Task<IActionResult> Scheduler([FromBody] EventRequestModel eventRequest )
         {
-            string json = System.IO.File.ReadAllText("credentials.json");
-            string tokens = System.IO.File.ReadAllText("tokens.json");
+            
+            string calendarID = "your-id";
 
-            dynamic tokenObj = Newtonsoft.Json.JsonConvert.DeserializeObject(tokens);
-            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-
-            string clientId = jsonObj.client_id;
-            string clientSecret = jsonObj.client_secret;
-            string accessToken = tokenObj.access_token;
-            string refreshToken = tokenObj.refresh_token;
-
-            var clientSecrets = new ClientSecrets
+            string[] Scopes = { CalendarService.Scope.Calendar };
+            GoogleCredential credentials;
+            using (var stream = new FileStream("service_key.json", FileMode.Open, FileAccess.Read))
             {
-                ClientId = clientId,
-                ClientSecret = clientSecret
-            };
 
-            var token = new TokenResponse { AccessToken = accessToken, RefreshToken = refreshToken };
-            var credentials = new UserCredential(new GoogleAuthorizationCodeFlow(
-                new GoogleAuthorizationCodeFlow.Initializer
-                {
-                    ClientSecrets = clientSecrets
-                }),
-                "user",
-                token);
-
-
+                credentials = GoogleCredential.FromStream(stream)
+                                     .CreateScoped(Scopes);
+            }
 
             var service = new CalendarService(new BaseClientService.Initializer()
             {
@@ -171,7 +132,7 @@ namespace PersonalAPI.Controllers
             };
 
             // Check for time conflicts
-            EventsResource.ListRequest request = service.Events.List("primary");
+            EventsResource.ListRequest request = service.Events.List(calendarID);
             request.TimeMin = newEvent.Start.DateTime;
             request.TimeMax = newEvent.End.DateTime;
             request.ShowDeleted = false;
@@ -181,8 +142,8 @@ namespace PersonalAPI.Controllers
             
 
             // Insert the new event
-            EventsResource.InsertRequest insertRequest = service.Events.Insert(newEvent, "primary");
-            var createdEvent = await service.Events.Insert(newEvent, "primary").ExecuteAsync();
+            EventsResource.InsertRequest insertRequest = service.Events.Insert(newEvent, calendarID);
+            var createdEvent = await service.Events.Insert(newEvent, calendarID).ExecuteAsync();
 
             if (createdEvent != null)
             {

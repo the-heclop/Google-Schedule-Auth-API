@@ -17,7 +17,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
     {
-        policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins("your-origins, cloud proiver will override these");
+        policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().WithOrigins("http://localhost:4200");
     });
 });
 
@@ -45,7 +45,6 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-
 
 
 builder.Services.AddControllers();

@@ -66,12 +66,12 @@ namespace PersonalAPI.Controllers
             if (loginRequest.Username == user.username && hash)
             {
 
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-key"));
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeyForSignInSecret@1234"));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: "example.com",
-                    audience: "example.com",
+                    issuer: "http://heclop.net",
+                    audience: "http://heclop.net",
                     claims: new List<Claim>(),
                     expires: DateTime.Now.AddHours(24),
                     signingCredentials: signinCredentials                    
@@ -97,12 +97,12 @@ namespace PersonalAPI.Controllers
 
             if (await UserExist(newUser.username)) return BadRequest("Username already exists");
 
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-key"));
+            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KeyForSignInSecret@1234"));
             var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);               
 
             var tokeOptions = new JwtSecurityToken(
-                issuer: "example.com",
-                audience: "example.com",
+                issuer: "http://heclop.net",
+                audience: "http://heclop.net",
                 claims: new List<Claim>(),
                 expires: DateTime.Now.AddHours(24),
                 signingCredentials: signinCredentials
