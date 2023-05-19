@@ -368,3 +368,5 @@ FodyWeavers.xsd
 /PersonalAPI/token.json/Google.Apis.Auth.OAuth2.Responses.TokenResponse-user
 /PersonalAPI/client_secret.json
 /PersonalAPI/tokens.json
+/PersonalAPI/client_secret.json
+/PersonalAPI/service_key.json
